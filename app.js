@@ -75,7 +75,7 @@ function renderOrders() {
     const status = String(order.status || 'pending').toLowerCase();
     const done = status === 'delivered';
     const items = (order.items || []).map(item => `${item.quantity || 1}x ${item.name || 'Item'}`).join(', ');
-    const address = order.deliveryAddress || order.customerAddress || order.address || 'Address not provided';
+    const address = order.customerAddress || order.deliveryAddress || order.address || 'Address not provided';
     const landmark = String(order.landmark || '').trim();
     const notes = String(order.notes || order.deliveryNotes || '').trim();
     const phone = String(order.customerPhone || '').replace(/\D/g, '').slice(-10);
