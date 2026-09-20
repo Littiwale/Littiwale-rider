@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08111c">
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <title>Littiwale Rider</title>
+</head>
+<body>
+  <main class="page-shell">
+    <section id="login-screen" class="login-screen">
+      <div class="brand-lockup"><img src="images/logo.png" alt="Littiwale logo"><div><strong>LITTIWALE</strong><span>TASTE OF DESI SWAG</span></div></div>
+      <p class="eyebrow">RIDER DELIVERY PORTAL</p>
+      <h1>Deliver the<br><em>Littiwale taste.</em></h1>
+      <p class="login-copy">Sign in to see your assigned deliveries and keep customers in the loop.</p>
+      <form id="login-form" class="panel auth-panel">
+        <label>Mobile number or username<input id="login-identifier" type="text" inputmode="tel" autocomplete="username" required placeholder="10-digit mobile"></label>
+        <label>Password<input id="login-password" type="password" autocomplete="current-password" required placeholder="Your rider password"></label>
+        <button class="primary-button" type="submit">Open my route <span>-></span></button>
+        <p id="login-error" class="form-error" role="alert"></p>
+      </form>
+      <button id="show-join-form" class="join-link" type="button">New rider? Sign in to join Littiwale</button>
+      <p class="login-note">New rider accounts start with the password provided by Littiwale admin.</p>
+      <form id="join-form" class="panel auth-panel hidden">
+        <div><p class="eyebrow">JOIN THE TEAM</p><h3>Request rider access</h3><p class="join-copy">Send your details for admin approval. You will receive login access after review.</p></div>
+        <label>Full name<input id="join-name" type="text" autocomplete="name" required placeholder="Your name"></label>
+        <label>Mobile number<input id="join-phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="10-digit mobile"></label>
+        <label>Email address<input id="join-email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <button class="primary-button" type="submit">Submit request <span>-></span></button>
+        <p id="join-message" class="form-error" role="status"></p>
+        <button id="hide-join-form" class="text-button" type="button">Back to sign in</button>
+      </form>
+    </section>
+
+    <section id="app-screen" class="app-screen hidden">
+      <header class="topbar">
+        <div>
+          <div class="mini-brand"><img src="images/logo.png" alt="Littiwale logo"><p class="eyebrow">LITTIWALE RIDER</p></div>
+          <h2>Good morning, <span id="rider-name">Rider</span>.</h2>
+        </div>
+        <button id="logout-button" class="icon-button" type="button" aria-label="Log out">↗</button>
+      </header>
+
+      <section class="hero-panel">
+        <div>
+          <p class="eyebrow">TODAY'S RUN</p>
+          <strong id="active-count">0 deliveries</strong>
+          <p id="route-caption">Your assigned orders will appear here.</p>
+        </div>
+        <div class="hero-stamp">ON<br>ROAD</div>
+      </section>
+
+      <section class="stats-grid" aria-label="Rider summary">
+        <div class="stat-card"><span>Active</span><strong id="stat-active">0</strong></div>
+        <div class="stat-card"><span>Delivered</span><strong id="stat-delivered">0</strong></div>
+        <div class="stat-card accent"><span>My earnings</span><strong id="stat-earnings">Rs 0</strong></div>
+      </section>
+
+      <section id="password-panel" class="panel password-panel hidden">
+        <div><p class="eyebrow">FIRST LOGIN</p><h3>Set your private password</h3><p>Change the starter password before taking deliveries.</p></div>
+        <form id="password-form">
+          <input id="new-password" type="password" minlength="8" autocomplete="new-password" placeholder="New password, 8+ characters" required>
+          <button class="primary-button" type="submit">Save password</button>
+          <p id="password-error" class="form-error" role="alert"></p>
+        </form>
+      </section>
+
+      <section class="orders-section">
+        <div class="section-heading"><div><p class="eyebrow">YOUR ORDERS</p><h3>Delivery queue</h3></div><button id="refresh-button" class="text-button" type="button">Refresh</button></div>
+        <nav class="filter-tabs" aria-label="Order filters">
+          <button class="filter-tab active" data-filter="active" type="button">Active</button>
+          <button class="filter-tab" data-filter="delivered" type="button">Completed</button>
+          <button class="filter-tab" data-filter="all" type="button">All</button>
+        </nav>
+        <div id="orders-list" class="orders-list"></div>
+      </section>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js?v=2"></script>
+</body>
+</html>

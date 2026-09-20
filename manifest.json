@@ -1,0 +1,10 @@
+{
+  "name": "Littiwale Rider",
+  "short_name": "LW Rider",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#071019",
+  "theme_color": "#08111c",
+  "description": "Littiwale delivery partner portal",
+  "icons": []
+}
