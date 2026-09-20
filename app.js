@@ -76,6 +76,8 @@ function renderOrders() {
     const done = status === 'delivered';
     const items = (order.items || []).map(item => `${item.quantity || 1}x ${item.name || 'Item'}`).join(', ');
     const address = order.deliveryAddress || order.customerAddress || order.address || 'Address not provided';
+    const landmark = String(order.landmark || '').trim();
+    const notes = String(order.notes || order.deliveryNotes || '').trim();
     const phone = String(order.customerPhone || '').replace(/\D/g, '').slice(-10);
     const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
     const action = done
@@ -85,6 +87,8 @@ function renderOrders() {
       <div class="order-top"><span class="order-id">#${String(id).slice(-6).toUpperCase()}</span><span class="status-pill ${done ? 'done' : ''}">${cleanStatus(status)}</span></div>
       <div class="customer-name">${escapeHtml(order.customerName || 'Customer')}</div>
       <div class="address">${escapeHtml(address)}</div>
+      ${landmark ? `<div class="address"><strong>Landmark:</strong> ${escapeHtml(landmark)}</div>` : ''}
+      ${notes ? `<div class="address"><strong>Note:</strong> ${escapeHtml(notes)}</div>` : ''}
       <div class="item-line">${escapeHtml(items || 'Order items unavailable')}</div>
       <div class="order-meta">
         <div><span class="meta-label">Customer payment</span><span class="meta-value">${order.paymentCollectedByStore || order.paymentMethod === 'UPI' ? 'Already paid' : formatMoney(order.finalTotal)} </span></div>
