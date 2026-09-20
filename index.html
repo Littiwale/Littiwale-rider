@@ -70,12 +70,13 @@
       </section>
 
       <section id="password-panel" class="panel password-panel hidden">
-        <div><p class="eyebrow">FIRST LOGIN</p><h3>Set your private password</h3><p>Change the starter password before taking deliveries.</p></div>
+        <div><p class="eyebrow">PASSWORD SECURITY</p><h3>Set a private password</h3><p>Optional: keep the starter password or change it now.</p></div>
         <form id="password-form">
           <input id="new-password" type="password" minlength="8" autocomplete="new-password" placeholder="New password, 8+ characters" required>
           <button class="primary-button" type="submit">Save password</button>
           <p id="password-error" class="form-error" role="alert"></p>
         </form>
+        <button id="skip-password-change" class="text-button" type="button">Skip for now</button>
       </section>
 
       <section class="orders-section">

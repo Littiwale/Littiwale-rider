@@ -191,6 +191,8 @@ $('password-form').addEventListener('submit', async (event) => {
   } catch (error) { $('password-error').textContent = error.message; }
 });
 
+$('skip-password-change').addEventListener('click', () => $('password-panel').classList.add('hidden'));
+
 $('orders-list').addEventListener('click', async (event) => {
   const button = event.target.closest('[data-action="status"]');
   if (!button) return;
