@@ -1,10 +1,12 @@
 {
   "name": "Littiwale Rider",
   "short_name": "LW Rider",
-  "start_url": "/",
+  "start_url": "/?source=installed-app",
   "display": "standalone",
-  "background_color": "#071019",
-  "theme_color": "#08111c",
-  "description": "Littiwale delivery partner portal",
-  "icons": []
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "description": "Join our Littiwale delivery team and manage assigned deliveries.",
+  "icons": [
+    { "src": "images/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
 }

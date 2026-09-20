@@ -4,6 +4,24 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
 
 const state = { token: localStorage.getItem('littiwale_rider_token') || '', rider: null, orders: [], filter: 'active' };
 const $ = (id) => document.getElementById(id);
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  $('install-app-button')?.classList.remove('hidden');
+});
+
+$('install-app-button')?.addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  $('install-app-button')?.classList.add('hidden');
+});
+
+window.addEventListener('appinstalled', () => $('install-app-button')?.classList.add('hidden'));
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 function showToast(message) {
   const toast = $('toast');
