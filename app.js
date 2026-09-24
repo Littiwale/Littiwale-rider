@@ -94,21 +94,9 @@ function renderOrders() {
         <div><span class="meta-label">Customer payment</span><span class="meta-value">${order.paymentCollectedByStore || order.paymentMethod === 'UPI' ? 'Already paid' : formatMoney(order.finalTotal)} </span></div>
         <div><span class="meta-label">My earning</span><span class="meta-value earning">${formatMoney(order.riderEarning)}</span></div>
       </div>
-      <div class="order-actions"><a class="action-button" href="tel:+91${phone}">Call customer</a><a class="action-button" href="${maps}" target="_blank" rel="noopener">Open maps</a><button class="action-button" data-action="slip" data-id="${id}">Earning slip</button>${action}</div>
+      <div class="order-actions"><a class="action-button" href="tel:+91${phone}">Call customer</a><a class="action-button" href="${maps}" target="_blank" rel="noopener">Open maps</a>${action}</div>
     </article>`;
   }).join('');
-}
-
-function openEarningSlip(orderId) {
-  const order = state.orders.find(item => String(item.orderId || item._id || item.id) === String(orderId));
-  if (!order) return;
-  const items = (order.items || []).map(item => `${item.quantity || 1}x ${escapeHtml(item.name || 'Item')}`).join(', ');
-  const slip = `<!doctype html><html><head><title>Littiwale Rider Earning Slip</title><style>body{font-family:Arial,sans-serif;max-width:420px;margin:32px auto;padding:20px;color:#111}h2{margin-bottom:4px}p{margin:8px 0}.line{display:flex;justify-content:space-between;border-bottom:1px solid #ddd;padding:10px 0}.total{font-size:20px;font-weight:800;color:#087f5b}@media print{button{display:none}}</style></head><body><h2>Littiwale Rider Earning Slip</h2><p>Order #${String(order.orderId || order._id || order.id).slice(-6).toUpperCase()}</p><p>Customer: ${escapeHtml(order.customerName || 'Customer')}</p><p>Items: ${items || 'Food order'}</p><p>Delivery status: ${escapeHtml(cleanStatus(order.status || 'assigned'))}</p><div class="line"><span>Customer order value</span><strong>${formatMoney(order.finalTotal)}</strong></div><div class="line total"><span>Rider earning</span><strong>${formatMoney(order.riderEarning)}</strong></div><p>This slip records the delivery earning assigned by Littiwale.</p><button onclick="window.print()">Print / Save PDF</button></body></html>`;
-  const slipWindow = window.open('', '_blank', 'noopener,noreferrer');
-  if (slipWindow) {
-    slipWindow.document.write(slip);
-    slipWindow.document.close();
-  }
 }
 
 function escapeHtml(value) {
@@ -210,11 +198,6 @@ $('password-form').addEventListener('submit', async (event) => {
 $('skip-password-change').addEventListener('click', () => $('password-panel').classList.add('hidden'));
 
 $('orders-list').addEventListener('click', async (event) => {
-  const slipButton = event.target.closest('[data-action="slip"]');
-  if (slipButton) {
-    openEarningSlip(slipButton.dataset.id);
-    return;
-  }
   const button = event.target.closest('[data-action="status"]');
   if (!button) return;
   button.disabled = true;
