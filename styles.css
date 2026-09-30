@@ -72,6 +72,10 @@ h2 { font-size:clamp(1.55rem,5vw,2.35rem); letter-spacing:-.045em; margin:0; }
 .meta-value { font-weight:700; font-size:13px; }
 .earning { color:var(--green); }
 .item-line { color:#8fa0a7; font-size:11px; margin:4px 0; }
+.payment-entry { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; padding:12px; border:1px solid rgba(244,180,0,.25); background:rgba(244,180,0,.06); }
+.payment-entry label { min-width:0; gap:5px; font-size:10px; }
+.payment-entry input,.payment-entry select { width:100%; min-width:0; border:1px solid var(--line); background:#101010; color:var(--ink); padding:10px; border-radius:6px; }
+.payment-entry button { grid-column:1 / -1; }
 .order-actions { display:flex; gap:8px; margin-top:15px; }
 .action-button { flex:1; border:1px solid var(--line); color:var(--ink); background:var(--panel-2); padding:11px 8px; font-size:11px; font-weight:700; text-align:center; text-decoration:none; }
 .action-button.primary { background:var(--green); color:#071019; border-color:var(--green); }

@@ -50,12 +50,12 @@ function cleanStatus(status) {
   return status === 'dispatched' ? 'Out for delivery' : status === 'delivered' ? 'Delivered' : 'Assigned';
 }
 
-function isActive(order) { return String(order.status || '').toLowerCase() !== 'delivered'; }
+function isActive(order) { return !['delivered', 'cancelled'].includes(String(order.status || '').toLowerCase()); }
 
 function renderStats() {
   const active = state.orders.filter(isActive);
-  const delivered = state.orders.filter(order => !isActive(order));
-  const earnings = state.orders.reduce((sum, order) => sum + Number(order.riderEarning || 0), 0);
+  const delivered = state.orders.filter(order => String(order.status || '').toLowerCase() === 'delivered');
+  const earnings = delivered.reduce((sum, order) => sum + Number(order.riderEarning || 0), 0);
   $('active-count').textContent = `${active.length} ${active.length === 1 ? 'delivery' : 'deliveries'}`;
   $('route-caption').textContent = active.length ? 'Stay sharp. Every handoff matters.' : 'No active deliveries assigned right now.';
   $('stat-active').textContent = active.length;
@@ -79,6 +79,10 @@ function renderOrders() {
     const landmark = String(order.landmark || '').trim();
     const notes = String(order.notes || order.deliveryNotes || '').trim();
     const phone = String(order.customerPhone || '').replace(/\D/g, '').slice(-10);
+    const total = Number(order.finalTotal || order.subtotal || 0);
+    const recordedPaid = Number(order.amountPaid || 0);
+    const paid = recordedPaid || (order.paymentCollectedByStore ? total : 0);
+    const due = Math.max(0, total - paid);
     const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
     const action = done
       ? '<span class="action-button">Completed</span>'
@@ -91,9 +95,14 @@ function renderOrders() {
       ${notes ? `<div class="address"><strong>Note:</strong> ${escapeHtml(notes)}</div>` : ''}
       <div class="item-line">${escapeHtml(items || 'Order items unavailable')}</div>
       <div class="order-meta">
-        <div><span class="meta-label">Customer payment</span><span class="meta-value">${order.paymentCollectedByStore || order.paymentMethod === 'UPI' ? 'Already paid' : formatMoney(order.finalTotal)} </span></div>
+        <div><span class="meta-label">Received / Due</span><span class="meta-value">${formatMoney(paid)} / ${formatMoney(due)}</span></div>
         <div><span class="meta-label">My earning</span><span class="meta-value earning">${formatMoney(order.riderEarning)}</span></div>
       </div>
+      ${['dispatched', 'delivered'].includes(status) && due > 0 ? `<div class="payment-entry">
+        <label>Payment received<input type="number" inputmode="decimal" min="0.01" step="0.01" data-payment-amount placeholder="Due ${formatMoney(due)}"></label>
+        <label>Method<select data-payment-method><option value="cash">Cash</option><option value="upi">UPI</option><option value="other">Other</option></select></label>
+        <button class="action-button primary" data-action="payment" data-id="${id}" type="button">Save payment</button>
+      </div>` : ''}
       <div class="order-actions"><a class="action-button" href="tel:+91${phone}">Call customer</a><a class="action-button" href="${maps}" target="_blank" rel="noopener">Open maps</a>${action}</div>
     </article>`;
   }).join('');
@@ -198,14 +207,26 @@ $('password-form').addEventListener('submit', async (event) => {
 $('skip-password-change').addEventListener('click', () => $('password-panel').classList.add('hidden'));
 
 $('orders-list').addEventListener('click', async (event) => {
-  const button = event.target.closest('[data-action="status"]');
+  const button = event.target.closest('[data-action]');
   if (!button) return;
   button.disabled = true;
   try {
-    const response = await api(`/rider/orders/${encodeURIComponent(button.dataset.id)}/status`, { method:'PATCH', body:JSON.stringify({ status:button.dataset.next }) });
+    const isPayment = button.dataset.action === 'payment';
+    const card = button.closest('.order-card');
+    const amount = Number(card?.querySelector('[data-payment-amount]')?.value);
+    const method = card?.querySelector('[data-payment-method]')?.value || 'cash';
+    if (isPayment && (!Number.isFinite(amount) || amount <= 0)) throw new Error('Enter the amount actually received');
+    const path = isPayment
+      ? `/rider/orders/${encodeURIComponent(button.dataset.id)}/payments`
+      : `/rider/orders/${encodeURIComponent(button.dataset.id)}/status`;
+    const body = isPayment ? { amount, method } : { status:button.dataset.next };
+    const response = await api(path, { method:isPayment ? 'POST' : 'PATCH', body:JSON.stringify(body) });
     const data = await response.json();
-    if (!response.ok || !data.success) throw new Error(data.error || 'Could not update delivery');
-    showToast(data.status === 'delivered' ? 'Delivery completed and admin updated.' : 'Delivery started.');
+    if (!response.ok || !data.success) throw new Error(data.error || (isPayment ? 'Could not record payment' : 'Could not update delivery'));
+    const overpaid = isPayment ? Math.max(0, Number(data.amountPaid || 0) - Number(data.total || 0)) : 0;
+    showToast(isPayment
+      ? (overpaid > 0 ? `Payment saved; ${formatMoney(overpaid)} above bill. Contact admin.` : `Payment saved. Balance due ${formatMoney(data.amountDue)}.`)
+      : (data.status === 'delivered' ? 'Delivery completed and admin updated.' : 'Delivery started.'));
     await loadOrders();
   } catch (error) { showToast(error.message); button.disabled = false; }
 });
